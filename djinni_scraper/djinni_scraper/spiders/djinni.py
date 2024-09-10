@@ -14,7 +14,10 @@ class DjinniSpider(scrapy.Spider):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        config_path = os.path.join(os.path.dirname(__file__), "../technologies_config.json")
+        config_path = os.path.join(
+            os.path.dirname(__file__),
+            "../technologies_config.json"
+        )
         with open(config_path, "r") as f:
             config = json.load(f)
             self.technologies = config.get("technologies", [])
@@ -22,22 +25,30 @@ class DjinniSpider(scrapy.Spider):
     def start_requests(self):
         for exp in range(11):
             url = f"{self.base_url}&exp_level={exp}y"
-            yield scrapy.Request(url, callback=self.parse, meta={"exp_level": exp})
+            yield scrapy.Request(
+                url,
+                callback=self.parse,
+                meta={"exp_level": exp}
+            )
 
     def parse(self, response):
         jobs = response.css(".list-unstyled li")
         exp_level = response.meta["exp_level"]
 
         for job in jobs:
-            link = response.urljoin(job.css(".job-item__title-link::attr(href)").get())
+            link = response.urljoin(
+                job.css(".job-item__title-link::attr(href)").get()
+            )
             if link:
                 job_url = response.urljoin(link)
                 self.logger.info(f"Job link: {job_url}")
                 yield scrapy.Request(
-                    job_url, callback=self.parce_job, meta={"exp_level": exp_level}
+                    job_url,
+                    callback=self.parse_job,
+                    meta={"exp_level": exp_level}
                 )
 
-    def parce_job(self, response: Response) -> dict:
+    def parse_job(self, response: Response) -> dict:
         city = (
             response.css(
                 'li.breadcrumb-item:nth-last-child(1) span[itemprop="name"]::text'
