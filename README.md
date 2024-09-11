@@ -21,6 +21,8 @@ scrapy crawl djinni -o jobs.csv
 
 4. Start analytic in file "data-analisys/djinni-DA"
 
+5. All graphs stored in 'images' folder
+
 ## Features
 
 * Secure and universal scrapper
